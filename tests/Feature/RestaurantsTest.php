@@ -167,7 +167,6 @@ class RestaurantsTest extends TestCase
      */
     public function a_user_with_a_token_can_delete_a_restaurant()
     {
-        $this->withoutExceptionHandling();
         $user = User::factory()->create();
 
         $data = [
@@ -177,13 +176,17 @@ class RestaurantsTest extends TestCase
             ]
         ];
 
-        $headers = $this->headers($user, "delete");
 
         Restaurant::factory()->create([ "id" => 1 ]);
 
         $this->assertEquals(1, Restaurant::count());
 
-        $response = $this->json("DELETE", "/api/v1/restaurants/1", $data, $headers);
+        $response = $this->json(
+            "DELETE",
+            "/api/v1/restaurants/1",
+            $data,
+            $this->headers($user, "delete")
+        );
 
         $this->assertEquals(0, Restaurant::count());
     }
