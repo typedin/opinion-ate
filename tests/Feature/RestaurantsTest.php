@@ -178,8 +178,7 @@ class RestaurantsTest extends TestCase
 
         $this->assertEquals(1, Restaurant::count());
 
-        $response = $this->json(
-            "DELETE",
+        $response = $this->deleteJson(
             "/api/v1/restaurants/1",
             $data,
             $this->headers("delete")
