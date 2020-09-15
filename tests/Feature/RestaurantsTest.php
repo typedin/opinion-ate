@@ -146,7 +146,7 @@ class RestaurantsTest extends TestCase
         ]);
         $this->assertEquals("Super Pasta", Restaurant::first()->name);
 
-        $response = $this->patchJson($route, $data, $headers);
+        $response = $this->patchJson("/api/v1/restaurants/1", $data, $headers);
 
         $response->assertStatus(200)
                  ->assertJsonPath(
