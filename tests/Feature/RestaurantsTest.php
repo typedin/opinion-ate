@@ -47,14 +47,18 @@ class RestaurantsTest extends TestCase
      */
     public function a_guest_cannot_create_a_restaurant()
     {
-        $headers = [
+        $headersWithNoCredentials = [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
         ];
 
         $this->assertCount(0, Restaurant::all());
 
-        $response = $this->postJson("/api/v1/restaurants", [], $headers);
+        $response = $this->postJson(
+            "/api/v1/restaurants",
+            [],
+            $headersWithNoCredentials
+        );
 
         $response->assertStatus(401);
         $this->assertCount(0, Restaurant::all());
