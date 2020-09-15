@@ -192,7 +192,7 @@ class RestaurantsTest extends TestCase
     {
         $token = $user->createToken(
             "{$method}-restaurant",
-            ["restaurant:delete"]
+            ["restaurant:{$method}"]
         )->plainTextToken;
 
         return [
