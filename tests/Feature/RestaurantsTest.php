@@ -188,10 +188,10 @@ class RestaurantsTest extends TestCase
         $this->assertEquals(0, Restaurant::count());
     }
 
-    private function headers($user)
+    private function headers($user, $method="delete")
     {
         $token = $user->createToken(
-            "delete-restaurant",
+            "{$method}-restaurant",
             ["restaurant:delete"]
         )->plainTextToken;
 
