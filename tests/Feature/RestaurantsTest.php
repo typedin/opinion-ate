@@ -51,20 +51,11 @@ class RestaurantsTest extends TestCase
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
         ];
-        $route = "/api/v1/restaurants";
-        $data = [
-            "data" => [
-                "type" => "restaurants",
-                "attributes" => [
-                    "name" => "Super Pasta",
-                    "address" => "Somewhere over the rainbow"
-                ]
-            ]
-        ];
+        $data = [ ];
 
         $this->assertCount(0, Restaurant::all());
 
-        $response = $this->postJson($route, $data, $headers);
+        $response = $this->postJson("/api/v1/restaurants", $data, $headers);
 
         $response->assertStatus(401);
         $this->assertCount(0, Restaurant::all());
