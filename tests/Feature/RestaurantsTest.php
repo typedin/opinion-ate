@@ -118,17 +118,12 @@ class RestaurantsTest extends TestCase
      */
     public function a_user_with_a_token_can_update_a_restaurant()
     {
-        $user = User::factory()->create();
-        $token = $user->createToken(
-            "update-restaurant",
-            ["restaurant:update"]
-        )->plainTextToken;
-        $headers = [
-            'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json',
-            "Authorization" => "Bearer {$token}"
-        ];
-        $route = "/api/v1/restaurants/1";
+        Restaurant::factory()->create([
+                "id" => 1,
+                "name" => "Super Pasta",
+                "address" => "Somewhere over the rainbow"
+        ]);
+
         $data = [
             "data" => [
                 "type" => "restaurants",
@@ -139,14 +134,15 @@ class RestaurantsTest extends TestCase
                 ]
             ]
         ];
-        Restaurant::factory()->create([
-                "id" => 1,
-                "name" => "Super Pasta",
-                "address" => "Somewhere over the rainbow"
-        ]);
         $this->assertEquals("Super Pasta", Restaurant::first()->name);
 
-        $response = $this->patchJson("/api/v1/restaurants/1", $data, $this->headers("patch"));
+        $response = $this->patchJson(
+            "/api/v1/restaurants/1",
+            $data,
+            $this->headers("patch")
+        );
+
+
 
         $response->assertStatus(200)
                  ->assertJsonPath(
