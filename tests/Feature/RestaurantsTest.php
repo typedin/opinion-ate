@@ -169,10 +169,6 @@ class RestaurantsTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $user = User::factory()->create();
-        $token = $user->createToken(
-            "delete-restaurant",
-            ["restaurant:delete"]
-        )->plainTextToken;
 
         $data = [
             "data" => [
@@ -181,7 +177,7 @@ class RestaurantsTest extends TestCase
             ]
         ];
 
-        $headers = $this->headers($token);
+        $headers = $this->headers($user);
 
         Restaurant::factory()->create([ "id" => 1 ]);
 
@@ -192,8 +188,13 @@ class RestaurantsTest extends TestCase
         $this->assertEquals(0, Restaurant::count());
     }
 
-    private function headers($token)
+    private function headers($user)
     {
+        $token = $user->createToken(
+            "delete-restaurant",
+            ["restaurant:delete"]
+        )->plainTextToken;
+
         return [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
