@@ -174,7 +174,6 @@ class RestaurantsTest extends TestCase
             ]
         ];
 
-
         Restaurant::factory()->create([ "id" => 1 ]);
 
         $this->assertEquals(1, Restaurant::count());
