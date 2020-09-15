@@ -177,7 +177,7 @@ class RestaurantsTest extends TestCase
             ]
         ];
 
-        $headers = $this->headers($user);
+        $headers = $this->headers($user, "delete");
 
         Restaurant::factory()->create([ "id" => 1 ]);
 
