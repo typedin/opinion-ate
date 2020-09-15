@@ -196,7 +196,8 @@ class RestaurantsTest extends TestCase
         $this->assertEquals(0, Restaurant::count());
     }
 
-    private function headers()
+    private function headers($user=null)
     {
+        return [];
     }
 }
