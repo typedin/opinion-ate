@@ -181,12 +181,7 @@ class RestaurantsTest extends TestCase
             ]
         ];
 
-        $headers = $this->headers($user);
-        $headers = [
-            'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json',
-            "Authorization" => "Bearer {$token}"
-        ];
+        $headers = $this->headers($token);
 
         Restaurant::factory()->create([ "id" => 1 ]);
 
@@ -197,8 +192,12 @@ class RestaurantsTest extends TestCase
         $this->assertEquals(0, Restaurant::count());
     }
 
-    private function headers($user=null)
+    private function headers($token)
     {
-        return [];
+        return [
+            'Accept' => 'application/vnd.api+json',
+            'Content-Type' => 'application/vnd.api+json',
+            "Authorization" => "Bearer {$token}"
+        ];
     }
 }
