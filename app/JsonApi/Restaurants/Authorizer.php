@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class Authorizer extends AbstractAuthorizer
 {
     public $guards = [];
-
+    
     /**
      * Authorize a resource index request.
      *
@@ -41,7 +41,7 @@ class Authorizer extends AbstractAuthorizer
      */
     public function create($type, $request)
     {
-        $this->can("create", $type);
+        //Auth::user()->tokenCan("create-restaurants");
     }
 
     /**
