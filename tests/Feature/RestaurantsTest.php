@@ -180,6 +180,7 @@ class RestaurantsTest extends TestCase
                 "id" => "1",
             ]
         ];
+
         $headers = [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
@@ -193,5 +194,9 @@ class RestaurantsTest extends TestCase
         $response = $this->json("DELETE", "/api/v1/restaurants/1", $data, $headers);
 
         $this->assertEquals(0, Restaurant::count());
+    }
+
+    private function headers()
+    {
     }
 }
