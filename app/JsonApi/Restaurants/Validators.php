@@ -44,8 +44,8 @@ class Validators extends AbstractValidators
     protected function rules($record, array $data): array
     {
         return [
-            "name" => "required|string",
-            "address" => "required"
+            "name" => "required|string|unique:App\Models\Restaurant,name",
+            "address" => "required|string|unique:App\Models\Restaurant,address"
         ];
     }
 
