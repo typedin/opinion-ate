@@ -1,6 +1,6 @@
 <?php
 
-namespace App\JsonApi\Restaurants;
+namespace App\JsonApi\Dishes;
 
 use CloudCreativity\LaravelJsonApi\Auth\AbstractAuthorizer;
 use Illuminate\Auth\Access\AuthorizationException;

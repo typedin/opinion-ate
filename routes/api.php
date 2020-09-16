@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 JsonApi::register("default")->middleware("auth:sanctum")->routes(function ($api) {
-    $api->resource('restaurants')->relationships(function ($relations) {
-        $relations->hasMany('dishes');
-    })->only('create', 'update', 'delete');
+    $api->resource('restaurants')->only('create', 'update', 'delete');
+
+    $api->resource('dishes')->only('create');
 });

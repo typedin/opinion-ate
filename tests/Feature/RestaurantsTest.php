@@ -2,12 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\Dish;
 use App\Models\Restaurant;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class RestaurantsTest extends TestCase
@@ -20,28 +18,45 @@ class RestaurantsTest extends TestCase
     }
 
     /** @test */
-    public function a_non_registered_user_can_get_all_restaurants()
+    public function a_non_registered_user_can_index_all_restaurants()
     {
-        $test = Restaurant::factory()
+        Restaurant::factory()
             ->count(2)
-            ->has(Dish::factory()->count(3))
-            ->create();
+            ->state(new Sequence(
+                [
+                    "name" => "First Restaurant",
+                    "address" => "First Address"
+                ],
+                [
+                    "name" => "Second Restaurant",
+                    "address" => "Second Address"
+                ],
+            ))->create();
 
-        $response = $this->get('/api/v1/restaurants');
+        $response = $this->getJson('/api/v1/restaurants', [
+            'Accept' => 'application/vnd.api+json',
+            'Content-Type' => 'application/vnd.api+json',
+        ]);
 
         $response->assertStatus(200);
 
-        $this->assertArrayHasKey(
-            "data",
-            $this->decodeJsonFromResponse($response)
+        $response->assertJsonPath(
+            'data.0.attributes.name',
+            'First Restaurant'
+        )->assertJsonPath(
+            'data.0.attributes.address',
+            'First Address'
         );
 
-        $this->assertEquals(
-            2,
-            count($this->decodeJsonFromResponse($response)["data"])
+        $response ->assertJsonPath(
+            'data.1.attributes.name',
+            'Second Restaurant'
+        )->assertJsonPath(
+            'data.1.attributes.address',
+            'Second Address'
         );
     }
-    
+
     /**
      * @test
      */
@@ -63,6 +78,7 @@ class RestaurantsTest extends TestCase
         $response->assertStatus(401);
         $this->assertCount(0, Restaurant::all());
     }
+
 
     /**
      * @test
@@ -102,9 +118,9 @@ class RestaurantsTest extends TestCase
     public function a_user_with_a_token_can_patch_a_restaurant()
     {
         Restaurant::factory()->create([
-                "id" => 1,
-                "name" => "Super Pasta",
-                "address" => "Somewhere over the rainbow"
+            "id" => 1,
+            "name" => "Super Pasta",
+            "address" => "Somewhere over the rainbow"
         ]);
 
         $data = [
@@ -165,7 +181,7 @@ class RestaurantsTest extends TestCase
         $this->assertEquals(0, Restaurant::count());
     }
 
-    private function headers($method="delete")
+    private function headers($method)
     {
         $user = User::factory()->create();
         $token = $user->createToken(
