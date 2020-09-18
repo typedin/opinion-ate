@@ -65,21 +65,46 @@ class RestaurantsTest extends TestCase
      */
     public function a_guest_cannot_create_a_restaurant()
     {
-        $headersWithNoCredentials = [
-            'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json',
-        ];
-
         $this->assertCount(0, Restaurant::all());
 
         $response = $this->postJson(
             "/api/v1/restaurants",
             [],
-            $headersWithNoCredentials
+            $this->headersWithNoCredentials()
         );
 
         $response->assertStatus(401);
         $this->assertCount(0, Restaurant::all());
+    }
+
+    /**
+     * @test
+     */
+    public function a_guest_cannot_delete_a_restaurant()
+    {
+        $headersWithNoCredentials = [
+            'Accept' => 'application/vnd.api+json',
+            'Content-Type' => 'application/vnd.api+json',
+        ];
+
+        $data = [
+            "data" => [
+                "type" => "restaurants",
+                "id" => "1",
+            ]
+        ];
+
+        Restaurant::factory()->create([ "id" => 1 ]);
+
+        $this->assertEquals(1, Restaurant::count());
+
+        $response = $this->deleteJson(
+            "/api/v1/restaurants/1",
+            $data,
+            $this->headersWithNoCredentials()
+        );
+
+        $this->assertEquals(1, Restaurant::count());
     }
 
 
@@ -100,7 +125,11 @@ class RestaurantsTest extends TestCase
 
         $this->assertCount(0, Restaurant::all());
 
-        $response = $this->postJson("/api/v1/restaurants", $data, $this->headers("patch"));
+        $response = $this->postJson(
+            "/api/v1/restaurants",
+            $data,
+            $this->headersWithCredentials("patch")
+        );
 
         $response->assertStatus(201)
                  ->assertJsonPath(
@@ -142,7 +171,7 @@ class RestaurantsTest extends TestCase
         $response = $this->patchJson(
             "/api/v1/restaurants/1",
             $data,
-            $this->headers("patch")
+            $this->headersWithCredentials("patch")
         );
 
         $response->assertStatus(200)
@@ -178,7 +207,7 @@ class RestaurantsTest extends TestCase
         $response = $this->deleteJson(
             "/api/v1/restaurants/1",
             $data,
-            $this->headers("delete")
+            $this->headersWithCredentials("delete")
         );
 
         $this->assertEquals(0, Restaurant::count());

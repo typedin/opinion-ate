@@ -30,7 +30,7 @@ class RestaurantsTest extends TestCase
         $response = $this->postJson(
             "/api/v1/restaurants",
             $data,
-            $this->headers("post")
+            $this->headersWithCredentials("post")
         );
 
         foreach ($validation as $key => $value) {

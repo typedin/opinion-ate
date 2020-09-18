@@ -25,12 +25,20 @@ trait HasHeader
             )->plainTextToken;
     }
 
-    private function headers($method)
+    private function headersWithCredentials($method)
     {
         return [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
             "Authorization" => "Bearer {$this->userToken($method)}"
+        ];
+    }
+
+    private function headersWithNoCredentials()
+    {
+        return [
+            'Accept' => 'application/vnd.api+json',
+            'Content-Type' => 'application/vnd.api+json',
         ];
     }
 }

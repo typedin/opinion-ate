@@ -151,7 +151,7 @@ class DishesTest extends TestCase
         $response = $this->postJson(
             "/api/v1/dishes",
             $data,
-            $this->headers("create")
+            $this->headersWithCredentials("create")
         );
 
         $response->assertStatus(201)
@@ -197,7 +197,7 @@ class DishesTest extends TestCase
         $response = $this->patchJson(
             "/api/v1/dishes/1",
             $data,
-            $this->headers("patch")
+            $this->headersWithCredentials("patch")
         );
 
         $response->assertStatus(200)
@@ -237,7 +237,7 @@ class DishesTest extends TestCase
         $response = $this->deleteJson(
             "/api/v1/dishes/1",
             $data,
-            $this->headers("delete")
+            $this->headersWithCredentials("delete")
         );
 
         $this->assertCount(0, Restaurant::first()->dishes);

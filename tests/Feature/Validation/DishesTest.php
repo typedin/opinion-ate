@@ -46,7 +46,7 @@ class DishesTest extends TestCase
         $response = $this->postJson(
             "/api/v1/dishes",
             $data,
-            $this->headers("post")
+            $this->headersWithCredentials("post")
         );
 
 
@@ -93,7 +93,7 @@ class DishesTest extends TestCase
                     ],
                 ]
             ],
-            $this->headers("post")
+            $this->headersWithCredentials("post")
         );
 
         $response->assertStatus(201);
