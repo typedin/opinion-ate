@@ -13,7 +13,7 @@ class RestaurantsTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @dataProvider nameValidationProvider
+     * @dataProvider validationProvider
      */
     public function testUniqueness($data, $validation)
     {
@@ -40,43 +40,7 @@ class RestaurantsTest extends TestCase
         $this->assertCount(1, Restaurant::all());
     }
 
-    /**
-     * @test
-     */
-    public function address_must_be_unique()
-    {
-        $data = [
-            "data" =>
-            [
-                "type" => "restaurants",
-                "attributes" => [
-                    "name" => "Some Different Name",
-                    "address" => "Already Taken Address"
-                ]
-            ]
-        ];
-        Restaurant::factory()->create([
-            "name" => "Already Taken Name",
-            "address" => "Already Taken Address"
-        ]);
-
-        $this->assertCount(1, Restaurant::all());
-
-        $response = $this->postJson(
-            "/api/v1/restaurants",
-            $data,
-            $this->headers("post")
-        );
-
-        $response->assertStatus(422);
-        $error = $response->json("errors")[0];
-        $this->assertEquals("The address has already been taken.", $error["detail"]);
-        $this->assertEquals("Unprocessable Entity", $error["title"]);
-
-        $this->assertCount(1, Restaurant::all());
-    }
-
-    public function nameValidationProvider(): array
+    public function validationProvider(): array
     {
         return [
             [

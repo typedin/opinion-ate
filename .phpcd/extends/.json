@@ -1,1 +1,1 @@
-["CloudCreativity\\LaravelJsonApi\\Validation\\AbstractValidators"]
+["CloudCreativity\\LaravelJsonApi\\Validation\\AbstractValidators","App\\Rules\\UniqueDishForRestaurant"]

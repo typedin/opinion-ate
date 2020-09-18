@@ -122,6 +122,7 @@ class DishesTest extends TestCase
      */
     public function a_user_with_a_valid_token_can_create_a_dish_for_a_restaurant()
     {
+        $this->withoutExceptionHandling();
         $data = [
             "data" => [
                 "type" => "dishes",
@@ -130,6 +131,14 @@ class DishesTest extends TestCase
                     "rating" => 4.42,
                     "restaurant_id" => 1
                 ],
+                "relationships" => [
+                    "restaurants" => [
+                        "data" => [
+                            "type" => "restaurants",
+                            "id" => "1"
+                        ]
+                    ]
+                ]
             ]
         ];
 
