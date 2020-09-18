@@ -2,6 +2,7 @@
 
 namespace App\JsonApi\Dishes;
 
+use App\Rules\DishNameRule;
 use CloudCreativity\LaravelJsonApi\Contracts\Validation\ValidatorInterface;
 use CloudCreativity\LaravelJsonApi\Eloquent\BelongsTo;
 use CloudCreativity\LaravelJsonApi\Rules\HasOne;

@@ -1,1 +1,1 @@
-["App\\Rules\\UniqueDishForRestaurant"]
+["App\\Rules\\UniqueDishForRestaurant","App\\Rules\\DishNameRule"]

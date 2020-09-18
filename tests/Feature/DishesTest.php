@@ -9,10 +9,13 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Tests\Traits\HasHeader;
 
 class DishesTest extends TestCase
 {
-    use RefreshDatabase;
+    const MODEL = "dish";
+
+    use RefreshDatabase, HasHeader;
 
     private function decodeJsonFromResponse($response)
     {
@@ -238,20 +241,5 @@ class DishesTest extends TestCase
         );
 
         $this->assertCount(0, Restaurant::first()->dishes);
-    }
-
-    private function headers($method)
-    {
-        $user = User::factory()->create();
-        $token = $user->createToken(
-            "{$method}-dish",
-            ["dish:{$method}"]
-        )->plainTextToken;
-
-        return [
-            'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json',
-            "Authorization" => "Bearer {$token}"
-        ];
     }
 }

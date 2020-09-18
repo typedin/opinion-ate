@@ -8,10 +8,12 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Tests\Traits\HasHeader;
 
 class DishesTest extends TestCase
 {
-    use RefreshDatabase;
+    const MODEL = "dish";
+    use RefreshDatabase, HasHeader;
 
     /**
      * @dataProvider validationProvider
@@ -47,7 +49,6 @@ class DishesTest extends TestCase
             $this->headers("post")
         );
 
-        //dd($response);
 
         foreach ($validation as $key => $value) {
             $this->assertEquals(
@@ -182,21 +183,6 @@ class DishesTest extends TestCase
                     ]
                 ]
             ]
-        ];
-    }
-
-    private function headers($method)
-    {
-        $user = User::factory()->create();
-        $token = $user->createToken(
-            "{$method}-dish",
-            ["dish:{$method}"]
-        )->plainTextToken;
-
-        return [
-            'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json',
-            "Authorization" => "Bearer {$token}"
         ];
     }
 }

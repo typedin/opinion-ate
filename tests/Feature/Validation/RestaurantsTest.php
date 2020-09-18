@@ -7,10 +7,13 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Tests\Traits\HasHeader;
 
 class RestaurantsTest extends TestCase
 {
-    use RefreshDatabase;
+    const MODEL = "restaurant";
+
+    use RefreshDatabase, HasHeader;
 
     /**
      * @dataProvider validationProvider
@@ -117,21 +120,6 @@ class RestaurantsTest extends TestCase
                     "address" => $value
                 ]
             ]
-        ];
-    }
-
-    private function headers($method)
-    {
-        $user = User::factory()->create();
-        $token = $user->createToken(
-            "{$method}-restaurant",
-            ["restaurant:{$method}"]
-        )->plainTextToken;
-
-        return [
-            'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json',
-            "Authorization" => "Bearer {$token}"
         ];
     }
 }
