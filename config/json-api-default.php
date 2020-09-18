@@ -66,8 +66,10 @@ return [
     | `'posts' => App\Post::class`
     */
     'resources' => [
-        'restaurants' => \App\Models\Restaurant::class,
+        "comments" => \App\Models\Comment::class,
         'dishes' => \App\Models\Dish::class,
+        'restaurants' => \App\Models\Restaurant::class,
+        "ratings" => \App\Models\Rating::class,
     ],
 
     /*

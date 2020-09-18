@@ -1,1 +1,1 @@
-["Database\\Factories\\RestaurantFactory","Database\\Factories\\DishFactory"]
+["Database\\Factories\\RestaurantFactory","Database\\Factories\\DishFactory","Database\\Factories\\CommentFactory","Database\\Factories\\RatingFactory"]

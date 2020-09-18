@@ -25,7 +25,6 @@ class DishesTest extends TestCase
             ->has(Dish::factory()->state([
                 "id" => 1,
                 "name" => "Jarret au Munster",
-                "rating" => 4.2
             ]))
             ->create([
                 "id" => 1
@@ -34,7 +33,6 @@ class DishesTest extends TestCase
             ->has(Dish::factory()->state([
                 "id" => 42,
                 "name" => "Jarret au Munster",
-                "rating" => 4.2
             ]))
             ->create([
                 "id" => 42,
@@ -71,7 +69,6 @@ class DishesTest extends TestCase
             ->has(Dish::factory()->state([
                 "id" => 1,
                 "name" => "Jarret au Munster",
-                "rating" => 4.2
             ]))
             ->create([
                 "id" => 1
@@ -88,7 +85,6 @@ class DishesTest extends TestCase
                     "type" => "dishes",
                     "attributes" => [
                         "name" =>  "Jarret au Munster",
-                        "rating" => 4.2,
                         "restaurant_id" => 2
                     ],
                 ]
@@ -135,7 +131,6 @@ class DishesTest extends TestCase
                         "attributes" => [
                             "name" => "A Name for a dish with restaurant id set to null",
                             "restaurant_id" => null,
-                            "rating" => 4.2,
                         ],
                     ],
                 ],
@@ -151,7 +146,6 @@ class DishesTest extends TestCase
                         "type" => "dishes",
                         "attributes" => [
                             "name" => "A Name for a dish with no restaurant id key value pair",
-                            "rating" => 4.2,
                         ],
                     ],
                 ],
@@ -171,7 +165,6 @@ class DishesTest extends TestCase
                 "type" => "dishes",
                 "attributes" => [
                     "name" => $value,
-                    "rating" => 4.2,
                     "restaurant_id" => 1
                 ],
                 "relationships" => [

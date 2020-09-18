@@ -15,11 +15,6 @@ class RestaurantsTest extends TestCase
 
     use RefreshDatabase, HasHeader;
 
-    private function decodeJsonFromResponse($response)
-    {
-        return json_decode($response->getContent(), true);
-    }
-
     /** @test */
     public function a_non_registered_user_can_index_all_restaurants()
     {
@@ -65,48 +60,27 @@ class RestaurantsTest extends TestCase
      */
     public function a_guest_cannot_create_a_restaurant()
     {
+        $data = [
+            "data" => [
+                "type" => "restaurants",
+                "attributes" => [
+                    "name" => "Super Pasta",
+                    "address" => "Somewhere over the rainbow"
+                ]
+            ]
+        ];
+
         $this->assertCount(0, Restaurant::all());
 
         $response = $this->postJson(
             "/api/v1/restaurants",
-            [],
+            $data,
             $this->headersWithNoCredentials()
         );
 
         $response->assertStatus(401);
         $this->assertCount(0, Restaurant::all());
     }
-
-    /**
-     * @test
-     */
-    public function a_guest_cannot_delete_a_restaurant()
-    {
-        $headersWithNoCredentials = [
-            'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json',
-        ];
-
-        $data = [
-            "data" => [
-                "type" => "restaurants",
-                "id" => "1",
-            ]
-        ];
-
-        Restaurant::factory()->create([ "id" => 1 ]);
-
-        $this->assertEquals(1, Restaurant::count());
-
-        $response = $this->deleteJson(
-            "/api/v1/restaurants/1",
-            $data,
-            $this->headersWithNoCredentials()
-        );
-
-        $this->assertEquals(1, Restaurant::count());
-    }
-
 
     /**
      * @test
@@ -147,13 +121,14 @@ class RestaurantsTest extends TestCase
     /**
      * @test
      */
-    public function a_user_with_a_token_can_patch_a_restaurant()
+    public function a_guest_cannot_patch_a_restaurant()
     {
-        Restaurant::factory()->create([
-            "id" => 1,
-            "name" => "Super Pasta",
-            "address" => "Somewhere over the rainbow"
-        ]);
+        Restaurant::factory()
+            ->create([
+                "id" => 1,
+                "name" => "Super Pasta",
+                "address" => "Somewhere over the rainbow"
+            ]);
 
         $data = [
             "data" => [
@@ -166,7 +141,55 @@ class RestaurantsTest extends TestCase
             ]
         ];
 
-        $this->assertEquals("Super Pasta", Restaurant::first()->name);
+        $this->assertEquals(
+            "Super Pasta",
+            Restaurant::first()->name
+        );
+
+        $response = $this->deleteJson(
+            "/api/v1/restaurants/1",
+            $data,
+            $this->headersWithNoCredentials()
+        );
+
+        $response->assertStatus(401);
+        $this->assertEquals(
+            "Super Pasta",
+            Restaurant::first()->name
+        );
+        $this->assertEquals(
+            "Somewhere over the rainbow",
+            Restaurant::first()->address
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_with_a_token_can_patch_a_restaurant()
+    {
+        Restaurant::factory()
+            ->create([
+                "id" => 1,
+                "name" => "Super Pasta",
+                "address" => "Somewhere over the rainbow"
+            ]);
+
+        $data = [
+            "data" => [
+                "type" => "restaurants",
+                "id" => "1",
+                "attributes" => [
+                    "name" => "Very Super Pasta",
+                    "address" => "Over the rainbow"
+                ]
+            ]
+        ];
+
+        $this->assertEquals(
+            "Super Pasta",
+            Restaurant::first()->name
+        );
 
         $response = $this->patchJson(
             "/api/v1/restaurants/1",
@@ -184,8 +207,40 @@ class RestaurantsTest extends TestCase
                      'Over the rainbow'
                  );
 
-        $this->assertEquals("Very Super Pasta", Restaurant::first()->name);
-        $this->assertEquals("Over the rainbow", Restaurant::first()->address);
+        $this->assertEquals(
+            "Very Super Pasta",
+            Restaurant::first()->name
+        );
+        $this->assertEquals(
+            "Over the rainbow",
+            Restaurant::first()->address
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function a_guest_cannot_delete_a_restaurant()
+    {
+        $data = [
+            "data" => [
+                "type" => "restaurants",
+                "id" => "1",
+            ]
+        ];
+
+        Restaurant::factory()->create([ "id" => 1 ]);
+
+        $this->assertEquals(1, Restaurant::count());
+
+        $response = $this->deleteJson(
+            "/api/v1/restaurants/1",
+            $data,
+            $this->headersWithNoCredentials()
+        );
+
+        $response->assertStatus(401);
+        $this->assertEquals(1, Restaurant::count());
     }
 
     /**
@@ -210,6 +265,7 @@ class RestaurantsTest extends TestCase
             $this->headersWithCredentials("delete")
         );
 
+        $response->assertStatus(204);
         $this->assertEquals(0, Restaurant::count());
     }
 }

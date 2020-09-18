@@ -10,7 +10,10 @@ JsonApi::register('default')->routes(function ($api) {
     })->readOnly();
     $api->resource('dishes')->relationships(function ($relations) {
         $relations->hasOne('restaurant');
-    });
+        $relations->hasMany('comments');
+    })->readOnly();
+    $api->resource("comments")->relationships(function ($relations) {
+    })->readOnly();
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -21,5 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 JsonApi::register("default")->middleware("auth:sanctum")->routes(function ($api) {
     $api->resource('restaurants')->only('create', 'update', 'delete');
 
-    $api->resource('dishes')->only('create');
+    $api->resource('dishes')->only('create', 'update', 'delete');
+    $api->resource("comments")->only("create", "update", "delete");
+    $api->resource("ratings");
 });

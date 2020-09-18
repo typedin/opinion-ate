@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Comment;
+use App\Models\Dish;
+use App\Models\Rating;
 use App\Models\Restaurant;
 use Illuminate\Database\Seeder;
 
@@ -14,24 +17,14 @@ class RestaurantsTableSeeder extends Seeder
      */
     public function run()
     {
-        $sushiPlace = Restaurant::create([
-            'name' => 'Sushi Place',
-            'address' => '123 Main Street'
-        ]);
-
-        $burgerPlace = Restaurant::create([
-            'name' => 'Burger Place',
-            'address' => '456 Other Street'
-        ]);
-
-        $sushiPlace->dishes()->createMany([
-            ['name' => 'Volcano Roll', 'rating' => 3],
-            ['name' => 'Salmon Nigiri', 'rating' => 4],
-        ]);
-
-        $burgerPlace->dishes()->createMany([
-            ['name' => 'Barbecue Burger', 'rating' => 5],
-            ['name' => 'Slider', 'rating' => 3],
-        ]);
+        Restaurant::factory()
+            ->has(
+                Dish::factory()
+                    ->hasComments(10)
+                    ->hasRatings(10)
+                ->count(10)
+            )
+            ->count(4)
+            ->create();
     }
 }

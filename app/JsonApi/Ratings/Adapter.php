@@ -1,6 +1,6 @@
 <?php
 
-namespace App\JsonApi\Dishes;
+namespace App\JsonApi\Ratings;
 
 use CloudCreativity\LaravelJsonApi\Eloquent\AbstractAdapter;
 use CloudCreativity\LaravelJsonApi\Pagination\StandardStrategy;
@@ -31,7 +31,7 @@ class Adapter extends AbstractAdapter
      */
     public function __construct(StandardStrategy $paging)
     {
-        parent::__construct(new \App\Models\Dish(), $paging);
+        parent::__construct(new \App\Models\Rating(), $paging);
     }
 
     /**
@@ -44,13 +44,4 @@ class Adapter extends AbstractAdapter
         $this->filterWithScopes($query, $filters);
     }
 
-    protected function restaurant()
-    {
-        return $this->hasOne();
-    }
-
-    protected function comments()
-    {
-        return $this->hasMany();
-    }
 }

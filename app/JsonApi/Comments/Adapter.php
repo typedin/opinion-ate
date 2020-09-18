@@ -1,7 +1,8 @@
 <?php
 
-namespace App\JsonApi\Dishes;
+namespace App\JsonApi\Comments;
 
+use App\Models\Dish;
 use CloudCreativity\LaravelJsonApi\Eloquent\AbstractAdapter;
 use CloudCreativity\LaravelJsonApi\Pagination\StandardStrategy;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,7 +32,7 @@ class Adapter extends AbstractAdapter
      */
     public function __construct(StandardStrategy $paging)
     {
-        parent::__construct(new \App\Models\Dish(), $paging);
+        parent::__construct(new \App\Models\Comment(), $paging);
     }
 
     /**
@@ -44,13 +45,9 @@ class Adapter extends AbstractAdapter
         $this->filterWithScopes($query, $filters);
     }
 
-    protected function restaurant()
-    {
-        return $this->hasOne();
-    }
 
-    protected function comments()
+    protected function dish()
     {
-        return $this->hasMany();
+        return $this->hasOne(Dish::class);
     }
 }

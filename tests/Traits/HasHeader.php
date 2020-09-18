@@ -18,7 +18,7 @@ trait HasHeader
     private function userToken($method): string
     {
         return User::factory()
-            ->create()
+            ->create(["id" => 1])
             ->createToken(
                 "{$method}-{$this->getModel()}",
                 ["{$this->getModel()}:{$method}"]
@@ -40,5 +40,10 @@ trait HasHeader
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
         ];
+    }
+
+    private function emptyHeader()
+    {
+        return [];
     }
 }

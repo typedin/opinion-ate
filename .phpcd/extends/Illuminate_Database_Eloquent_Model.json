@@ -1,1 +1,1 @@
-["App\\Models\\Restaurant","App\\Models\\Dish"]
+["App\\Models\\Restaurant","App\\Models\\Dish","App\\Models\\Comment","App\\Models\\Rating"]
