@@ -105,8 +105,8 @@ class CommentsTest extends TestCase
                     "type" => "comments",
                     "attributes" => [
                         "body" => "Delicious.",
-                        "dish_id" => 1,
-                        "user_id" => 1
+                        "dish_id" => "1",
+                        "user_id" => "1",
                     ],
                 ]
             ],
@@ -150,6 +150,35 @@ class CommentsTest extends TestCase
     /**
      * @test
      */
+    public function a_guest_cannot_update_a_comment_for_a_dish()
+    {
+        $dish = Dish::factory()
+            ->has(Comment::factory()->state([
+                "id" => 1,
+                "body" => "Good.",
+                "user_id" => 1
+            ]))
+            ->create(["id" => 1]);
+        
+        $this->assertCount(1, $dish->comments);
+        $this->assertEquals("Good.", $dish->fresh()->comments->first()->body);
+
+        $response = $this->patchJson(
+            "api/v1/comments/1",
+            $this->dataWithMergedAttributes([
+                    "body" => "Delicious.",
+            ]),
+            $this->headersWithNoCredentials("update")
+        );
+
+        $response->assertStatus(401);
+        $this->assertCount(1, $dish->comments);
+        $this->assertEquals("Good.", $dish->fresh()->comments->first()->body);
+    }
+
+    /**
+     * @test
+     */
     public function a_user_with_a_token_can_delete_a_comment_for_a_dish()
     {
         $dish = Dish::factory()
@@ -171,13 +200,41 @@ class CommentsTest extends TestCase
         $this->assertCount(0, $dish->fresh()->comments);
     }
 
-    private function dataWithMergedAttributes(array $attributes=[]): array
+    /**
+     * @test
+     */
+    public function a_guest_cannot_delete_a_comment_for_a_dish()
+    {
+        $dish = Dish::factory()
+            ->has(Comment::factory()->state([
+                "id" => 1,
+                "user_id" => 1,
+            ]))
+            ->create(["id" => 1]);
+        
+        $this->assertCount(1, $dish->comments);
+
+        $response = $this->deleteJson(
+            "api/v1/comments/1",
+            $this->dataWithMergedAttributes([]),
+            $this->headersWithNoCredentials()
+        );
+
+        $response->assertStatus(401);
+        $this->assertCount(1, $dish->fresh()->comments);
+    }
+
+    private function dataWithMergedAttributes(array $overrides=[]): array
     {
         return [
             "data" => [
                 "type" => "comments",
                 "id" => "1",
-                "attributes" => $attributes,
+                "attributes" => array_merge([
+                    "body" => "Great Dish",
+                    "dish_id" => "1",
+                    "user_id" => "1"
+                ], $overrides)
             ]
         ];
     }

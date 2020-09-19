@@ -60,8 +60,8 @@ class UserDishCommentTest extends TestCase
                     "type" => "comments",
                     "attributes" => [
                         "body" => "Absolutely great dish.",
-                        "dish_id" => 1,
-                        "user_id" => 1
+                        "dish_id" => "1",
+                        "user_id" => "1"
                     ],
                 ]
             ],

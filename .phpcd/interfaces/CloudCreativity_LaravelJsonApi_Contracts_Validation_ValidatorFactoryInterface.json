@@ -1,1 +1,1 @@
-["App\\JsonApi\\Restaurants\\Validators","CloudCreativity\\LaravelJsonApi\\Validation\\AbstractValidators","App\\JsonApi\\Dishes\\Validators"]
+["App\\JsonApi\\Restaurants\\Validators","CloudCreativity\\LaravelJsonApi\\Validation\\AbstractValidators","App\\JsonApi\\Dishes\\Validators","App\\JsonApi\\Comments\\Validators"]
