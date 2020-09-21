@@ -46,7 +46,7 @@ class DishesTest extends TestCase
         $this->assertJsonValueEquals(
             $response->getContent(),
             "$.data[0].attributes.name",
-            "Chesseburger"
+            "AppleSauce"
         );
         $this->assertJsonValueEquals(
             $response->getContent(),
@@ -56,7 +56,7 @@ class DishesTest extends TestCase
         $this->assertJsonValueEquals(
             $response->getContent(),
             "$.data[1].attributes.name",
-            "AppleSauce"
+            "Chesseburger"
         );
         $this->assertJsonValueEquals(
             $response->getContent(),
