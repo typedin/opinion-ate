@@ -52,6 +52,7 @@ class Validators extends AbstractValidators
         $attributes = Request::get("data")["attributes"];
         return [
             "restaurant_id" => ["required"],
+            "user_id" => ["required"],
             "name" => [
                 "required",
                 "string",

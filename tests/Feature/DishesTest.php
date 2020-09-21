@@ -30,9 +30,9 @@ class DishesTest extends TestCase
             ->has(Rating::factory()->count(1)->state(["value" => 4.42]))
             ->count(3)
             ->state(new Sequence(
-                [ "name" => "Chesseburger", ],
-                [ "name" => "AppleSauce", ],
-                [ "name" => "Jarret au Munster", ],
+                [ "name" => "AppleSauce" ],
+                [ "name" => "Chesseburger" ],
+                [ "name" => "Jarret au Munster" ],
             ))
             ->create();
 
@@ -103,6 +103,7 @@ class DishesTest extends TestCase
                  );
     }
 
+
     /**
      * @test
      */
@@ -134,7 +135,8 @@ class DishesTest extends TestCase
                 "type" => "dishes",
                 "attributes" => [
                     "name" => "Jarret au Munster",
-                    "restaurant_id" => 1
+                    "user_id" => "1",
+                    "restaurant_id" => "1"
                 ],
             ]
         ];
@@ -156,6 +158,7 @@ class DishesTest extends TestCase
 
         $this->assertCount(1, Restaurant::first()->dishes);
     }
+
 
     /**
      * @test
@@ -194,8 +197,9 @@ class DishesTest extends TestCase
         Restaurant::factory()
             ->hasDishes([
                     "id" => "1",
+                    "user_id" => "1",
                     "name" => "Jarret au Camembert",
-                    "restaurant_id" => 1
+                    "restaurant_id" => "1"
             ])
             ->create(["id" => 1]);
 
@@ -203,6 +207,7 @@ class DishesTest extends TestCase
             "/api/v1/dishes/1",
             $this->dataWithMergedAttributes([
                     "name" => "Jarret au Munster",
+                    "user_id" => 1,
                     "restaurant_id" => 1
             ]),
             $this->headersWithCredentials("patch")
@@ -214,6 +219,33 @@ class DishesTest extends TestCase
                      'Jarret au Munster'
                  );
     }
+
+    /**
+     * @test
+     */
+    public function a_user_with_a_valid_token_cannot_patch_someonelses_dish_for_a_restaurant()
+    {
+        Restaurant::factory()
+            ->hasDishes([
+                    "id" => "1",
+                    "name" => "Jarret au Camembert",
+                    "restaurant_id" => 1
+            ])
+            ->create(["id" => 1]);
+
+        $response = $this->patchJson(
+            "/api/v1/dishes/1",
+            $this->dataWithMergedAttributes([
+                    "name" => "Jarret au Munster",
+                    "user_id" => 42,
+                    "restaurant_id" => 1
+            ]),
+            $this->headersWithCredentials("patch", 42)
+        );
+
+        $response->assertStatus(401);
+    }
+
 
     /**
      * @test
@@ -241,29 +273,56 @@ class DishesTest extends TestCase
 
         $this->assertCount(1, Restaurant::first()->dishes);
     }
+
     /**
      * @test
      */
-    public function a_user_with_a_token_can_delete_a_dish_from_a_restaurant()
+    public function an_owner_of_a_dish_with_a_token_can_delete_it_from_a_restaurant()
     {
         Restaurant::factory()
-            ->hasDishes(
-                [
-                    "id" => "1",
-                    "name" => "Jarret au Camembert",
-                    "restaurant_id" => 1
-                ]
-            )->create(["id" => 1]);
+            ->hasDishes([
+                "id" => 1,
+                "restaurant_id" => 1,
+                "user_id" => 1,
+                "name" => "Jarret au Camembert",
+            ])->create([
+                "id" => 1,
+            ]);
 
         $this->assertCount(1, Restaurant::first()->dishes);
 
         $response = $this->deleteJson(
             "/api/v1/dishes/1",
+            $this->dataWithMergedAttributes([
+                "user_id" => 1,
+                "restaurant_id" => 1,
+            ]),
+            $this->headersWithCredentials("delete", 1)
+        );
+    
+        $this->assertCount(0, Restaurant::first()->dishes);
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_with_a_valid_token_cannot_delete_someonelses_dish_for_a_restaurant()
+    {
+        Restaurant::factory()
+            ->hasDishes([
+                    "id" => 1,
+                    "name" => "Jarret au Camembert",
+                    "restaurant_id" => 1
+            ])
+            ->create(["id" => 1]);
+
+        $response = $this->deleteJson(
+            "/api/v1/dishes/1",
             $this->dataWithMergedAttributes(),
-            $this->headersWithCredentials("delete")
+            $this->headersWithCredentials("delete", 42)
         );
 
-        $this->assertCount(0, Restaurant::first()->dishes);
+        $response->assertStatus(401);
     }
 
     /**
@@ -274,7 +333,7 @@ class DishesTest extends TestCase
         $restaurant1 = Restaurant::factory()
             ->hasDishes(
                 [
-                    "id" => "1",
+                    "id" => 1,
                     "name" => "Jarret au Camembert",
                     "restaurant_id" => 1
                 ]
@@ -304,45 +363,6 @@ class DishesTest extends TestCase
 
         $this->assertCount(1, $restaurant1->fresh()->dishes);
         $this->assertCount(0, $restaurant2->fresh()->dishes);
-    }
-
-    /**
-     * @test
-     */
-    public function a_user_with_a_token_can_assign_an_existing_dish_to_another_restaurant()
-    {
-        $restaurant1 = Restaurant::factory()
-            ->hasDishes([
-                "id" => "1",
-                "name" => "Jarret au Camembert",
-                "restaurant_id" => 1
-            ])
-            ->create(["id" => 1]);
-
-        $restaurant2 = Restaurant::factory()
-            ->create(["id" => 2]);
-
-        $this->assertCount(1, $restaurant1->dishes);
-        $this->assertCount(0, $restaurant2->dishes);
-
-        $response = $this->patchJson(
-            "/api/v1/dishes/1",
-            [
-                "data" => [
-                    "type" => "dishes",
-                    "id" => "1",
-                    "attributes" => [
-                        "restaurant_id" => 2
-                    ],
-                ]
-            ],
-            $this->headersWithCredentials("update")
-        );
-
-        $response->assertStatus(200);
-
-        $this->assertCount(0, $restaurant1->fresh()->dishes);
-        $this->assertCount(1, $restaurant2->fresh()->dishes);
     }
 
     private function dataWithMergedAttributes(array $attributes=[]): array

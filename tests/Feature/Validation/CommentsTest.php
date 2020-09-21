@@ -28,6 +28,7 @@ class CommentsTest extends TestCase
                 "body" => "Great Jarret au Munster",
             ]))
             ->create([
+                "user_id" => 1,
                 "id" => 1
             ]);
         $dish2 = Dish::factory()
@@ -37,6 +38,7 @@ class CommentsTest extends TestCase
                 "body" => "Another comment for a Jarret au Munster in another restaurant",
             ]))
             ->create([
+                "user_id" => 1,
                 "id" => 42,
             ]);
 
@@ -46,7 +48,7 @@ class CommentsTest extends TestCase
         $response = $this->postJson(
             "/api/v1/comments",
             $data,
-            $this->headersWithCredentials("post")
+            $this->headersWithCredentials("post", 1)
         );
 
 
@@ -96,16 +98,6 @@ class CommentsTest extends TestCase
             ],
             [
                 $this->bodyData([
-                    "dish_id" => 42
-                ]),
-                "validation" => [
-                    "status" => "422",
-                    "title" => "Unprocessable Entity",
-                    "detail" => "The dish id must be a string."
-                ]
-            ],
-            [
-                $this->bodyData([
                     "user_id" => null
                 ]),
                 "validation" => [
@@ -114,16 +106,6 @@ class CommentsTest extends TestCase
                     "detail" => "The user id field is required."
                 ]
             ],
-            [
-                $this->bodyData([
-                    "user_id" => 42
-                ]),
-                "validation" => [
-                    "status" => "422",
-                    "title" => "Unprocessable Entity",
-                    "detail" => "The user id must be a string."
-                ]
-            ]
         ];
     }
 
@@ -134,8 +116,8 @@ class CommentsTest extends TestCase
                 "type" => "comments",
                 "attributes" => array_merge([
                     "body" => "Great Dish",
-                    "dish_id" => "1",
-                    "user_id" => "1"
+                    "dish_id" => 1,
+                    "user_id" => 1
                 ], $overrides)
             ]
         ];

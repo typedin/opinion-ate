@@ -1,1 +1,1 @@
-["App\\JsonApi\\Restaurants\\Authorizer","App\\JsonApi\\Dishes\\Authorizer"]
+["App\\JsonApi\\Restaurants\\Authorizer","App\\JsonApi\\Dishes\\Authorizer","App\\JsonApi\\Comments\\Authorizer"]

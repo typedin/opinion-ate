@@ -13,6 +13,7 @@ use Tests\Traits\HasHeader;
 class DishesTest extends TestCase
 {
     const MODEL = "dish";
+
     use RefreshDatabase, HasHeader;
 
     /**
@@ -23,6 +24,7 @@ class DishesTest extends TestCase
     {
         $restaurant1 = Restaurant::factory()
             ->has(Dish::factory()->state([
+                "user_id" => "1",
                 "id" => 1,
                 "name" => "Jarret au Munster",
             ]))
@@ -31,6 +33,7 @@ class DishesTest extends TestCase
             ]);
         $restaurant2 = Restaurant::factory()
             ->has(Dish::factory()->state([
+                "user_id" => "1",
                 "id" => 42,
                 "name" => "Jarret au Munster",
             ]))
@@ -44,7 +47,7 @@ class DishesTest extends TestCase
         $response = $this->postJson(
             "/api/v1/dishes",
             $data,
-            $this->headersWithCredentials("post")
+            $this->headersWithCredentials("post", "1")
         );
 
 
@@ -67,6 +70,7 @@ class DishesTest extends TestCase
     {
         $restaurant1 = Restaurant::factory()
             ->has(Dish::factory()->state([
+                "user_id" => "1",
                 "id" => 1,
                 "name" => "Jarret au Munster",
             ]))
@@ -85,11 +89,12 @@ class DishesTest extends TestCase
                     "type" => "dishes",
                     "attributes" => [
                         "name" =>  "Jarret au Munster",
-                        "restaurant_id" => 2
+                        "user_id" => "1",
+                        "restaurant_id" => "2"
                     ],
                 ]
             ],
-            $this->headersWithCredentials("post")
+            $this->headersWithCredentials("post", "1")
         );
 
         $response->assertStatus(201);
@@ -101,7 +106,9 @@ class DishesTest extends TestCase
     {
         return [
             [
-                $this->nameData(null),
+                $this->nameData([
+                    "name" => null
+                ]),
                 "validation" => [
                     "status" => "422",
                     "title" => "Unprocessable Entity",
@@ -109,7 +116,9 @@ class DishesTest extends TestCase
                 ]
             ],
             [
-                $this->nameData(42),
+                $this->nameData([
+                    "name" => 42
+                ]),
                 "validation" => [
                     "status" => "422",
                     "title" => "Unprocessable Entity",
@@ -117,7 +126,9 @@ class DishesTest extends TestCase
                 ]
             ],
             [
-                $this->nameData("Jarret au Munster"),
+                $this->nameData([
+                    "name" => "Jarret au Munster"
+                ]),
                 "validation" => [
                     "status" => "422",
                     "title" => "Unprocessable Entity",
@@ -125,15 +136,9 @@ class DishesTest extends TestCase
                 ]
             ],
             [
-                [
-                    "data" => [
-                        "type" => "dishes",
-                        "attributes" => [
-                            "name" => "A Name for a dish with restaurant id set to null",
-                            "restaurant_id" => null,
-                        ],
-                    ],
-                ],
+                $this->nameData([
+                    "restaurant_id" => null,
+                ]),
                 "validation" => [
                     "status" => "422",
                     "title" => "Unprocessable Entity",
@@ -141,40 +146,28 @@ class DishesTest extends TestCase
                 ]
             ],
             [
-                [
-                    "data" => [
-                        "type" => "dishes",
-                        "attributes" => [
-                            "name" => "A Name for a dish with no restaurant id key value pair",
-                        ],
-                    ],
-                ],
+                $this->nameData([
+                    "user_id" => null,
+                ]),
                 "validation" => [
                     "status" => "422",
                     "title" => "Unprocessable Entity",
-                    "detail" => "The restaurant id field is required."
+                    "detail" => "The user id field is required."
                 ]
             ],
         ];
     }
 
-    private function nameData($value)
+    private function nameData(array $overrides): array
     {
         return [
             "data" => [
                 "type" => "dishes",
-                "attributes" => [
-                    "name" => $value,
-                    "restaurant_id" => 1
-                ],
-                "relationships" => [
-                    "restaurants" => [
-                        "data" => [
-                            "type" => "restaurants",
-                            "id" => "1"
-                        ]
-                    ]
-                ]
+                "attributes" => array_merge([
+                    "name" => "A name that has not been taken.",
+                    "user_id" => "1",
+                    "restaurant_id" => "1",
+                ], $overrides),
             ]
         ];
     }

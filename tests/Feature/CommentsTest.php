@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Comment;
 use App\Models\Dish;
+use App\Models\User;
 use Helmich\JsonAssert\JsonAssertions;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -94,7 +95,10 @@ class CommentsTest extends TestCase
      */
     public function a_user_with_a_token_can_create_a_comment_for_a_dish()
     {
-        $dish = Dish::factory()->create(["id" => 1]);
+        $dish = Dish::factory()->create([
+            "id" => 1,
+            "user_id" => 1,
+        ]);
         
         $this->assertCount(0, $dish->comments);
 
@@ -105,12 +109,12 @@ class CommentsTest extends TestCase
                     "type" => "comments",
                     "attributes" => [
                         "body" => "Delicious.",
-                        "dish_id" => "1",
-                        "user_id" => "1",
+                        "dish_id" => 1,
+                        "user_id" => 1,
                     ],
                 ]
             ],
-            $this->headersWithCredentials("create")
+            $this->headersWithCredentials("create", 1)
         );
 
         $response->assertStatus(201);
@@ -118,34 +122,6 @@ class CommentsTest extends TestCase
         $this->assertEquals("Delicious.", $dish->fresh()->comments->first()->body);
     }
 
-    /**
-     * @test
-     */
-    public function a_user_with_a_token_can_update_a_comment_for_a_dish()
-    {
-        $dish = Dish::factory()
-            ->has(Comment::factory()->state([
-                "id" => 1,
-                "body" => "Good.",
-                "user_id" => 1
-            ]))
-            ->create(["id" => 1]);
-        
-        $this->assertCount(1, $dish->comments);
-        $this->assertEquals("Good.", $dish->fresh()->comments->first()->body);
-
-        $response = $this->patchJson(
-            "api/v1/comments/1",
-            $this->dataWithMergedAttributes([
-                    "body" => "Delicious.",
-            ]),
-            $this->headersWithCredentials("update")
-        );
-
-        $response->assertStatus(200);
-        $this->assertCount(1, $dish->fresh()->comments);
-        $this->assertEquals("Delicious.", $dish->fresh()->comments->first()->body);
-    }
 
     /**
      * @test
@@ -179,25 +155,59 @@ class CommentsTest extends TestCase
     /**
      * @test
      */
-    public function a_user_with_a_token_can_delete_a_comment_for_a_dish()
+    public function a_user_with_a_token_can_update_a_comment_for_a_dish()
+    {
+        $comment = Comment::factory()->create([
+            "id" => 1,
+            "body" => "Good.",
+            "user_id" => User::factory()->create(["id" => 1])
+        ]);
+
+        $this->assertEquals("Good.", $comment->body);
+
+        $response = $this->patchJson(
+            "api/v1/comments/1",
+            $this->dataWithMergedAttributes([
+                "body" => "Delicious.",
+            ]),
+            $this->headersWithCredentials("update", 1)
+        );
+        
+        $response->assertStatus(200);
+
+        $this->assertEquals("Delicious.", $comment->fresh()->body);
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_with_a_token_cannot_update_someonelses_comment_for_a_dish()
     {
         $dish = Dish::factory()
             ->has(Comment::factory()->state([
                 "id" => 1,
                 "user_id" => 1,
+                "body" => "Good.",
             ]))
-            ->create(["id" => 1]);
+            ->create([
+                "id" => 1
+            ]);
         
         $this->assertCount(1, $dish->comments);
+        $this->assertEquals("Good.", $dish->fresh()->comments->first()->body);
 
-        $response = $this->deleteJson(
+        $response = $this->patchJson(
             "api/v1/comments/1",
-            $this->dataWithMergedAttributes([]),
-            $this->headersWithCredentials("delete")
+            $this->dataWithMergedAttributes([
+                    "user_id" => 42,
+                    "body" => "Delicious.",
+            ]),
+            $this->headersWithCredentials("update", 42)
         );
-
-        $response->assertStatus(204);
-        $this->assertCount(0, $dish->fresh()->comments);
+        
+        $response->assertStatus(401);
+        $this->assertCount(1, $dish->fresh()->comments);
+        $this->assertEquals("Good.", $dish->fresh()->comments->first()->body);
     }
 
     /**
@@ -205,6 +215,48 @@ class CommentsTest extends TestCase
      */
     public function a_guest_cannot_delete_a_comment_for_a_dish()
     {
+        $comment = Comment::factory()->create([
+            "id" => 1,
+            "user_id" => User::factory()->create(["id" => 1])
+        ]);
+        
+        $this->assertCount(1, Comment::all());
+
+        $response = $this->deleteJson(
+            "api/v1/comments/1",
+            $this->dataWithMergedAttributes(),
+            $this->headersWithNoCredentials()
+        );
+
+        $response->assertStatus(401);
+        $this->assertCount(1, Comment::all());
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_with_a_token_can_delete_a_comment_for_a_dish()
+    {
+        $comment = Comment::factory()->create([
+            "id" => 1,
+            "user_id" => User::factory()->create(["id" => 1])
+        ]);
+
+        $response = $this->deleteJson(
+            "api/v1/comments/1",
+            $this->dataWithMergedAttributes(),
+            $this->headersWithCredentials("delete", 1)
+        );
+
+        $response->assertStatus(204);
+        $this->assertCount(0, Comment::all());
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_with_a_token_cannot_delete_someonelses_comment_for_a_dish()
+    {
         $dish = Dish::factory()
             ->has(Comment::factory()->state([
                 "id" => 1,
@@ -216,8 +268,10 @@ class CommentsTest extends TestCase
 
         $response = $this->deleteJson(
             "api/v1/comments/1",
-            $this->dataWithMergedAttributes([]),
-            $this->headersWithNoCredentials()
+            $this->dataWithMergedAttributes([
+                "user_id" => 42,
+            ]),
+            $this->headersWithCredentials("delete", 42)
         );
 
         $response->assertStatus(401);
@@ -232,8 +286,8 @@ class CommentsTest extends TestCase
                 "id" => "1",
                 "attributes" => array_merge([
                     "body" => "Great Dish",
-                    "dish_id" => "1",
-                    "user_id" => "1"
+                    "dish_id" => 1,
+                    "user_id" => 1
                 ], $overrides)
             ]
         ];

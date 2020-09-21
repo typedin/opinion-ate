@@ -11,12 +11,16 @@ class Dish extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'restaurant_id'];
+    protected $fillable = ['name', 'restaurant_id', "user_id"];
 
     protected $casts = [
-        "rating" => "float"
+        "rating" => "float",
     ];
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class)    ;
+    }
     public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);

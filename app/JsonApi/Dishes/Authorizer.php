@@ -2,6 +2,7 @@
 
 namespace App\JsonApi\Dishes;
 
+use App\JsonApi\Traits\CanOnlyBeModifiedByCreatorTrait;
 use CloudCreativity\LaravelJsonApi\Auth\AbstractAuthorizer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 
 class Authorizer extends AbstractAuthorizer
 {
+    use CanOnlyBeModifiedByCreatorTrait;
 
     /**
      * Authorize a resource index request.
@@ -57,37 +59,4 @@ class Authorizer extends AbstractAuthorizer
     {
         // TODO: Implement read() method.
     }
-
-    /**
-     * Authorize a resource update request.
-     *
-     * @param object $record
-     *      the domain record.
-     * @param Request $request
-     *      the inbound request.
-     * @return void
-     * @throws AuthenticationException|AuthorizationException
-     *      if the request is not authorized.
-     */
-    public function update($record, $request)
-    {
-        // TODO: Implement update() method.
-    }
-
-    /**
-     * Authorize a resource read request.
-     *
-     * @param object $record
-     *      the domain record.
-     * @param Request $request
-     *      the inbound request.
-     * @return void
-     * @throws AuthenticationException|AuthorizationException
-     *      if the request is not authorized.
-     */
-    public function delete($record, $request)
-    {
-        // TODO: Implement delete() method.
-    }
-
 }

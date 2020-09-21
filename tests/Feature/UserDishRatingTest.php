@@ -46,9 +46,13 @@ class UserDishRatingTest extends TestCase
      */
     public function a_user_with_a_token_can_rate_a_dish()
     {
-        Restaurant::factory()->has(Dish::factory())->create();
+        $dish = Dish::factory()
+            ->for(Restaurant::factory())
+            ->create([
+                "user_id" => 1
+            ]);
 
-        $this->assertEquals(0, Dish::first()->rating) ;
+        $this->assertEquals(0, $dish->rating) ;
 
         $response = $this->postJson(
             "/api/v1/ratings",
@@ -61,9 +65,9 @@ class UserDishRatingTest extends TestCase
                     ]
                 ]
             ],
-            $this->headersWithCredentials("created")
+            $this->headersWithCredentials("created", 1)
         );
         $response->assertStatus(201);
-        $this->assertEquals(5, Dish::first()->rating) ;
+        $this->assertEquals(5, $dish->fresh()->rating) ;
     }
 }

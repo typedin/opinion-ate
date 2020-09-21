@@ -48,10 +48,13 @@ class UserDishCommentTest extends TestCase
      */
     public function a_user_with_a_valid_token_comment_on_a_dish()
     {
-        $this->withoutExceptionHandling();
-        Restaurant::factory()->has(Dish::factory())->create();
+        $dish = Dish::factory()
+            ->for(Restaurant::factory())
+            ->create([
+                "user_id" => 1
+            ]);
 
-        $this->assertCount(0, Dish::first()->comments) ;
+        $this->assertCount(0, $dish->comments) ;
 
         $response = $this->postJson(
             "/api/v1/comments",
@@ -60,17 +63,17 @@ class UserDishCommentTest extends TestCase
                     "type" => "comments",
                     "attributes" => [
                         "body" => "Absolutely great dish.",
-                        "dish_id" => "1",
-                        "user_id" => "1"
+                        "dish_id" => 1,
+                        "user_id" => 1
                     ],
                 ]
             ],
-            $this->headersWithCredentials("post")
+            $this->headersWithCredentials("post", 1)
         );
 
         $response->assertStatus(201);
 
-        $this->assertCount(1, Dish::first()->comments) ;
-        $this->assertCount(1, User::first()->comments) ;
+        $this->assertCount(1, $dish->fresh()->comments) ;
+        $this->assertEquals(1, $dish->user->id) ;
     }
 }

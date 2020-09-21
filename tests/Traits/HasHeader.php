@@ -15,22 +15,32 @@ trait HasHeader
         return self::MODEL;
     }
 
-    private function userToken($method): string
+    private function userToken($method, $id): string
     {
+        $appleSauce = User::where("id", $id)->first();
+        
+        if ($appleSauce) {
+            return $appleSauce
+            ->createToken(
+                "{$method}-{$this->getModel()}",
+                ["{$this->getModel()}:{$method}"]
+            )->plainTextToken;
+        }
+
         return User::factory()
-            ->create(["id" => 1])
+            ->create(["id" => $id])
             ->createToken(
                 "{$method}-{$this->getModel()}",
                 ["{$this->getModel()}:{$method}"]
             )->plainTextToken;
     }
 
-    private function headersWithCredentials($method)
+    private function headersWithCredentials($method, $id=1)
     {
         return [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
-            "Authorization" => "Bearer {$this->userToken($method)}"
+            "Authorization" => "Bearer {$this->userToken($method, $id)}"
         ];
     }
 

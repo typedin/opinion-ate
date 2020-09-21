@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Dish;
 use App\Models\Restaurant;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -28,6 +29,7 @@ class DishFactory extends Factory
         );
         return [
             "name" => $this->faker->foodName(),
+            "user_id" => User::factory(),
             "restaurant_id" => Restaurant::factory()
         ];
     }

@@ -44,8 +44,8 @@ class Validators extends AbstractValidators
     {
         return [
             "body" => ["required", "string"],
-            "dish_id" => ["required", "string"],
-            "user_id" => ["required", "string"],
+            "dish_id" => ["required"],
+            "user_id" => ["required"],
         ];
     }
 
