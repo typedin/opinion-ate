@@ -16,30 +16,20 @@ use Tests\Traits\HasHeader;
 class RestaurantsTest extends TestCase
 {
     use RefreshDatabase, HasHeader;
-    
-    public function setUp(): void
-    {
-        parent::setUp();
 
-        Restaurant::factory()
-            ->has(Dish::factory()
-                    ->count(5)
-                    ->state(new Sequence(
-                        [ "name" => "AppleSauce" ],
-                        [ "name" => "Chesseburger" ],
-                        [ "name" => "Jarret au Munster"],
-                    )))
-            ->create([
-                "id" => 1,
-                "name" => "Super Pasta",
-                "address" => "Somewhere over the rainbow"
-            ]);
-    }
     /**
      * @test
      */
     public function a_visitor_can_show_a_restaurant_with_its_relationships()
     {
+        Restaurant::factory()
+            ->has(Dish::factory())
+            ->create([
+                "id" => 1,
+                "name" => "Super Pasta",
+                "address" => "Somewhere over the rainbow"
+            ]);
+
         $response = $this->getJson(
             self::API_URL . "/restaurants/1",
             $this->headersWithNoCredentials()
@@ -52,6 +42,7 @@ class RestaurantsTest extends TestCase
             "$.data.id",
             "1"
         );
+
         $this->assertJsonValueEquals(
             $response->getContent(),
             "$.data.attributes.name",
