@@ -11,11 +11,12 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
+use Tests\Traits\CanDecodeJson;
 use Tests\Traits\HasHeader;
 
 class RestaurantsTest extends TestCase
 {
-    use RefreshDatabase, HasHeader;
+    use RefreshDatabase, HasHeader, CanDecodeJson;
 
     /**
      * @test

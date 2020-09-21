@@ -1,1 +1,1 @@
-["CloudCreativity\\LaravelJsonApi\\Validation\\AbstractValidators","App\\Rules\\UniqueDishForRestaurant","App\\Rules\\DishNameRule","Tests\\Traits\\HasHeader","App\\JsonApi\\Traits\\CanOnlyBeModifiedByCreatorTrait"]
+["CloudCreativity\\LaravelJsonApi\\Validation\\AbstractValidators","App\\Rules\\UniqueDishForRestaurant","App\\Rules\\DishNameRule","Tests\\Traits\\HasHeader","App\\JsonApi\\Traits\\CanOnlyBeModifiedByCreatorTrait","Tests\\Traits\\CanDecodeJson"]
