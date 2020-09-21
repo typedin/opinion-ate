@@ -69,9 +69,4 @@ class RestaurantsTest extends TestCase
             $this->decodedJson($response, "data.relationships.dishes.links")
         );
     }
-
-    private function decodedJson(TestResponse $response, $path="data")
-    {
-        return Arr::get(json_decode($response->getContent(), true), $path);
-    }
 }
