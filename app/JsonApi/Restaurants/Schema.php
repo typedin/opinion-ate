@@ -43,7 +43,11 @@ class Schema extends SchemaProvider
             'dishes' => [
                 self::SHOW_SELF => true,
                 self::SHOW_RELATED => true,
-            ]
+            ],
+            'images' => [
+                self::SHOW_SELF => true,
+                self::SHOW_RELATED => true,
+            ],
         ];
     }
 }

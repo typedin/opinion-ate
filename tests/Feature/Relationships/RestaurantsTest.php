@@ -3,6 +3,7 @@
 namespace Tests\Feature\Relationships;
 
 use App\Models\Dish;
+use App\Models\Image;
 use App\Models\Rating;
 use App\Models\Restaurant;
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -25,6 +26,7 @@ class RestaurantsTest extends TestCase
     {
         Restaurant::factory()
             ->has(Dish::factory())
+            ->has(Image::factory()->count(2))
             ->create([
                 "id" => 1,
                 "name" => "Super Pasta",
@@ -57,16 +59,20 @@ class RestaurantsTest extends TestCase
         );
 
         $this->assertArrayHasKey(
-            "relationships",
-            $this->decodedJson($response, "data")
-        );
-        $this->assertArrayHasKey(
             "self",
             $this->decodedJson($response, "data.relationships.dishes.links")
         );
         $this->assertArrayHasKey(
             "related",
             $this->decodedJson($response, "data.relationships.dishes.links")
+        );
+        $this->assertArrayHasKey(
+            "self",
+            $this->decodedJson($response, "data.relationships.images.links")
+        );
+        $this->assertArrayHasKey(
+            "related",
+            $this->decodedJson($response, "data.relationships.images.links")
         );
     }
 }

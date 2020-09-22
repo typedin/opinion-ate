@@ -31,6 +31,11 @@ class Dish extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function images()
+    {
+        return $this->morphMany(Image::class, "imageable");
+    }
+
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);

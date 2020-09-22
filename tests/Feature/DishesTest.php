@@ -19,7 +19,6 @@ class DishesTest extends TestCase
 
     use RefreshDatabase, HasHeader, JsonAssertions;
 
-
     /**
      * @test
      */
@@ -103,7 +102,6 @@ class DishesTest extends TestCase
                  );
     }
 
-
     /**
      * @test
      */
@@ -158,8 +156,6 @@ class DishesTest extends TestCase
 
         $this->assertCount(1, Restaurant::first()->dishes);
     }
-
-
     /**
      * @test
      */
@@ -245,7 +241,6 @@ class DishesTest extends TestCase
 
         $response->assertStatus(401);
     }
-
 
     /**
      * @test

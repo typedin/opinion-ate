@@ -4,6 +4,7 @@ namespace Tests\Feature\Relationships;
 
 use App\Models\Comment;
 use App\Models\Dish;
+use App\Models\Image;
 use App\Models\Rating;
 use App\Models\Restaurant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,6 +25,7 @@ class DishesTest extends TestCase
         Dish::factory()
             ->for(Restaurant::factory())
             ->has(Comment::factory())
+            ->has(Image::factory()->count(2))
             ->has(Rating::factory()->count(10)->state(["value" => 5.00]))
             ->create([
                 "id" => 1,

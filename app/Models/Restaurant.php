@@ -12,8 +12,17 @@ class Restaurant extends Model
 
     protected $fillable = ['name', 'address'];
 
+    /**
+     * @return HasMany Dish
+     */
     public function dishes(): HasMany
     {
         return $this->hasMany(Dish::class);
+    }
+
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, "imageable");
     }
 }
