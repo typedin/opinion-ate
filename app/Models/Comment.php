@@ -17,7 +17,7 @@ class Comment extends Model
     
     public function dish()
     {
-        return $this->hasOne(Dish::class);
+        return $this->belongsTo(Dish::class);
     }
 
     public function user()

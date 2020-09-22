@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use Tests\Traits\HasHeader;
 
-class CommentsTest extends TestCase
+class DishCommentsTest extends TestCase
 {
     use RefreshDatabase, HasHeader, JsonAssertions;
 
@@ -121,7 +121,6 @@ class CommentsTest extends TestCase
         $this->assertCount(1, $dish->fresh()->comments);
         $this->assertEquals("Delicious.", $dish->fresh()->comments->first()->body);
     }
-
 
     /**
      * @test

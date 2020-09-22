@@ -44,9 +44,4 @@ class Adapter extends AbstractAdapter
     {
         $this->filterWithScopes($query, $filters);
     }
-
-    protected function dish()
-    {
-        return $this->hasOne(Dish::class);
-    }
 }
